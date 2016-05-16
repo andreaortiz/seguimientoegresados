@@ -1,0 +1,10 @@
+@CHARSET "ISO-8859-1";
+#formcreacionPregunta
+{
+	horizontal-align: center;
+}
+#radiocentro
+{
+	font-size: 30px;
+	horizontal-align: center;	
+}

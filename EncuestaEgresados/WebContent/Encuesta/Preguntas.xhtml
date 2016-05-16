@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+	<h:head>
+	</h:head>
+	<h:body>
+		<h:outputText style="font-weight: bold; font-size:23px;" value="#{encuestacontrol.devolverEncuesta(user.usuarioId)}" /><br/>
+		
+		<h:form id="formPreguntas">
+			<h:outputText style="font-size:13px;" value="Número de preguntas registradas en esta encuesta: " />
+			<h:outputText id="outputNumPreg" style="font-size:13px;" value="#{encuestacontrol.numPreguntas(encuestacontrol.encuesta_Id)}" /><br/><br/>
+			<p:growl id="growl" sticky="false" showDetail="true" life="5000"/>
+			<p:messages id="messages" showDetail="true" autoUpdate="true" closable="true"/>
+			<p:dataTable id="dataPreguntas" var="preg" 
+						 value="#{encuestacontrol.ObtenerPreguntasUs(encuestacontrol.encuesta_Id)}" 
+						 paginator="true" rows="7" styleClass="paginated" 
+						 emptyMessage="No hay preguntas registradas para esta encuesta."
+						 style="text-align:center;">
+    			<p:column headerText="Enunciado">
+        			<h:outputText value="#{preg.pregunta_Enunciado}" />
+    			</p:column>
+				<p:column headerText="Tipo">
+        			<h:outputText value="#{preg.pregunta_Tipo}" />
+    			</p:column>
+				<p:column headerText="Obligatorio">
+					<p:graphicImage value="resources/images/check.png" title="SI" rendered="#{preg.obligatorio}" style="width:30px;height:30px;"/>
+					<p:graphicImage value="resources/images/close.png" title="NO" rendered="#{!preg.obligatorio}" style="width:30px;height:30px;"/>
+    			</p:column>
+    			<p:column headerText="Acciones" style="width:120px;text-align: center">
+    			    			
+    			<!-- <p:commandButton id="btnOpciones" value="Opciones de Preguntas" ajax="false" action="#{encuestacontrol.IrCrearOpciones(encuestacontrol.encuesta_Id)}"/> -->
+    			
+    		
+    			
+    			<p:commandButton id="btnOpciones" value="Opciones de Pregunta" oncomplete="docDialogoOpcPregunta.show()"
+    			 update=":formPreguntas:docDetalleOpcPregunta" action="#{encuestacontrol.putOldPreguntaId(preg)}" 
+    			 icon="ui-icon-pencil" title="Opciones Pregunta">
+						<f:setPropertyActionListener value="#{preg}" target="#{encuestacontrol.preEdit}" />
+					</p:commandButton>
+        	
+        			<p:commandButton id="btnEditarPre" value="Editar" oncomplete="docDialogoPregunta.show()" update=":formPreguntas:docDetallePregunta" action="#{encuestacontrol.putOldPreguntaId(preg)}" icon="ui-icon-pencil" title="EditarPregunta">
+						<f:setPropertyActionListener value="#{preg}" target="#{encuestacontrol.preEdit}" />
+					</p:commandButton>
+        	
+        			<p:commandButton icon="ui-icon-close" title="Eliminar" value="Eliminar" oncomplete="eliminarPregDialogo.show()" update=":formPreguntas:detalleBorrarPreg">
+			    		<f:setPropertyActionListener value="#{preg}" target="#{encuestacontrol.preEdit}" />
+			    	</p:commandButton>
+			    	
+			    	
+    			</p:column>
+			</p:dataTable>
+			
+					<p:dialog header="Opción de Pregunta" widgetVar="docDialogoOpcPregunta" modal="true" showEffect="fade" hideEffect="fade" resizable="false" >				
+				<h:panelGrid id="docDetalleOpcPregunta" columns="2" cellpadding="5">	
+					<f:facet name="header">
+						<h:panelGroup style="display:block; text-align:center; width:100%">
+							<h:outputText value="#{encuestacontrol.preEdit.pregunta_Enunciado}" style = "font-weight: bold;"/>
+							
+						</h:panelGroup>
+					</f:facet>	                		        
+                    
+ 			
+ 			<!-- POLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL Taborda  -->
+ 			 		
+ 			
+ 			<p:dataTable id="tablaOpciones" var="opcion" value="#{encuestacontrol.ObtenerOpcionesPol(encuestacontrol.preEdit.pregunta_Id)}"
+ 			 paginator="true" rows="10" styleClass="paginated" 
+ 			 emptyMessage="No hay Opciones creadas para esta Pregunta" style="text-align:center">
+	
+			<p:column headerText="Enunciado" >
+			            <h:outputText value="#{opcion.opcion_Enunciado}" />
+			    </p:column>
+			<p:column headerText="Acciones" style="width:120px;text-align: center">
+
+
+				<p:commandButton  value="Editar Opcion" oncomplete="docDialogoOpciones.show()" 
+					update=":formPreguntas:docDetalleOpciones" action="#{encuestacontrol.putOldOpcionId(opcion)}" 
+					icon="ui-icon-pencil" title="EditarOpciones">
+						<f:setPropertyActionListener value="#{opcion}" target="#{encuestacontrol.opc}" />
+					</p:commandButton>	
+				
+						<p:commandButton icon="ui-icon-close" title="Eliminar Opcion" value="Eliminar" 
+						oncomplete="eliminarOpcDialogo.show()" 
+							action="#{encuestacontrol.putOldOpcionId(opcion)}" >
+			    			<f:setPropertyActionListener value="#{opcion}" target="#{encuestacontrol.opc}" />
+			    		</p:commandButton>
+								</p:column>
+							</p:dataTable>
+		   		</h:panelGrid>		   				   								            
+	    	</p:dialog>
+
+<!-- Opciones -->
+	    	<p:dialog header="Edición de Opciones" widgetVar="docDialogoOpciones" modal="true" showEffect="fade" hideEffect="fade" resizable="false" >				
+				<h:panelGrid id="docDetalleOpciones" columns="2" cellpadding="5">	
+					<f:facet name="header">
+						<h:panelGroup style="display:block; text-align:center; width:100%">
+							<h:outputText value="Los campos con (*) son obligatorios" style = "font-weight: bold;"/>
+						</h:panelGroup>
+					</f:facet>	                		        
+                    <h:outputLabel value="Enunciado: *" for="enunciado2"/>
+                    <p:inputText id="enunciado2" value="#{encuestacontrol.opc.opcion_Enunciado}" />
+             
+                    <f:facet name="footer">
+            			<h:panelGroup style="display:block; text-align:right; width:100%">
+                			<p:commandButton id="btnOpcionGuardar" value="Guardar Cambios"
+                			 actionListener="#{encuestacontrol.editarOpcionPol(encuestacontrol.opc.opcion_Enunciado)}" update=":formPreguntas" />
+            			</h:panelGroup>
+        			</f:facet>
+		   		</h:panelGrid>						            
+	    	</p:dialog>
+
+	    		<p:dialog id="confirmarBorrarOp" header="¿Desea eliminar la Opcion?" widgetVar="eliminarOpcDialogo" modal="true" showEffect="fade" hideEffect="fade" resizable="false" >
+			    <h:panelGrid id="detalleBorrarOpc" cellpadding="5">		
+			    	<h:panelGroup style="display:block; text-align:center; width:100%">
+						<p:commandButton value="Eliminar" oncomplete="eliminarOpcDialogo.hide()" actionListener="#{encuestacontrol.DeleteOpcionPol()}"
+						 update=":formPreguntas" />
+			    		<p:commandButton value= "Cancelar" onclick="eliminarOpcDialogo.hide()"/>			
+					</h:panelGroup>
+				</h:panelGrid>
+    		</p:dialog>
+	    	
+	    	
+	    	
+	    	
+	    	
+	    	
+	    	
+	    	
+	    	
+	    	
+	    	
+	    	
+			<!-- OPreguntas -->
+			<p:dialog header="Edición de Pregunta" widgetVar="docDialogoPregunta" modal="true" showEffect="fade" hideEffect="fade" resizable="false" >				
+				<h:panelGrid id="docDetallePregunta" columns="2" cellpadding="5">	
+					<f:facet name="header">
+						<h:panelGroup style="display:block; text-align:center; width:100%">
+							<h:outputText value="Los campos con (*) son obligatorios" style = "font-weight: bold;"/>
+						</h:panelGroup>
+					</f:facet>	                		        
+                    <h:outputLabel value="Enunciado: *" for="enunciado"/>
+                    <p:inputText id="enunciado" value="#{encuestacontrol.preEdit.pregunta_Enunciado}" />
+                    
+ 					<h:outputText value="Obligatoria: " for="oblig" style="font-size:14px"/>
+ 					<p:selectBooleanCheckbox id="oblig" value="#{encuestacontrol.preEdit.obligatorio}"/>
+                    <f:facet name="footer">
+            			<h:panelGroup style="display:block; text-align:right; width:100%">
+                			<p:commandButton id="btnGuardar" value="Guardar cambios" actionListener="#{encuestacontrol.EditarPregunta()}" update=":formPreguntas" />
+            			</h:panelGroup>
+        			</f:facet>
+		   		</h:panelGrid>						            
+	    	</p:dialog>
+	    	    	
+	    		    	
+	    	<p:dialog id="confirmarBorrarPreg" header="¿Desea eliminar la pregunta?" widgetVar="eliminarPregDialogo" modal="true" showEffect="fade" hideEffect="fade" resizable="false" >
+			    <h:panelGrid id="detalleBorrarPreg" cellpadding="5">		
+			    	<h:panelGroup style="display:block; text-align:center; width:100%">
+						<p:commandButton value="Eliminar" oncomplete="eliminarPregDialogo.hide()" actionListener="#{encuestacontrol.eliminarPregunta()}" update="outputNumPreg dataPreguntas" />
+			    		<p:commandButton value= "Cancelar" onclick="eliminarPregDialogo.hide()"/>			
+					</h:panelGroup>
+				</h:panelGrid>
+    		</p:dialog>
+
+		</h:form>
+		<br />
+		<h:form>
+			<p:commandButton id="btnVolver" value="Volver" ajax="false" action="#{encuestacontrol.VolverEncuestas()}" />&nbsp;&nbsp;<p:commandButton id="btnCrearPreg" value="Crear Nueva Pregunta" ajax="false" action="#{encuestacontrol.IrCrearPregunta(encuestacontrol.encuesta_Id)}"/>
+		</h:form>
+	</h:body>
+</html>

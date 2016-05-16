@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+	<h:head>
+	
+	</h:head>
+	
+	<h:body>
+	<h:form>
+	<p:panel id="panel" header="Crear Pregunta" style="width:500px; text-align:center" >
+	       	<h:panelGrid columns="2" >
+		    	<h:outputLabel for="enunciado" value="Enunciado*" />
+		        <p:inputText id="enunciado" value="#{encuestacontrol.enunciado}" />
+		        <h:outputLabel for="tipopregunta" value="Tipo de Pregunta" />
+		        <p:selectOneMenu id="tipopregunta" value="#{encuestacontrol.tipopregunta}" >
+		            <f:selectItem itemLabel="Respuesta Unica" itemValue="Respuesta Unica" />
+		            <f:selectItem itemLabel="Respuesta Abierta" itemValue="Respuesta Abierta" />
+		            <f:selectItem itemLabel="Respuesta Desplegable" itemValue="Respuesta Desplegable" />
+        		</p:selectOneMenu>
+		        <br></br>
+		        <p:commandButton id="btnCrearPreg" value="Aceptar" ajax="false" action="#{encuestacontrol.IrCrearOpciones(encuestacontrol.encuesta_Id)}"/>
+		        <p:commandButton id="btnCancelarPreg" value="Cancelar" ajax="false" />
+	        </h:panelGrid>
+	        <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+	    </p:panel>
+	
+	</h:form>
+	</h:body>
+</html>

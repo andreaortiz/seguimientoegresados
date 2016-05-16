@@ -1,0 +1,19 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<link rel="stylesheet" type="text/css" href="resources/css/styles-menu.css" />
+</h:head>
+<h:body>
+	<div class="ui-messages-info ui-corner-all" id="menuTitle">
+		<span class="ui-messages-info-detail" style="text-align:center"><b>Menú</b></span>
+	</div>
+	<h:form>
+	 	<p:commandButton id="btnCrearEncuesta" value="Crear nueva encuesta" ajax="false" action="#{encuestacontrol.IrCrearEncuesta()}"/>
+	</h:form>
+</h:body>
+</html>

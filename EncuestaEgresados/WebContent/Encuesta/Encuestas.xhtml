@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+</h:head>
+<h:body>
+	<h3>Encuestas</h3>
+	<h:form id="formEncuestas" >
+		<p:growl id="growl" sticky="false" showDetail="true" life="5000"/>
+		<p:dataTable var="enc" value="#{encuestacontrol.ObtenerEncuestasUs(user.usuarioId)}" paginator="true" rows="10" styleClass="paginated" emptyMessage="No hay encuestas registradas.">
+			<!--  <p:column headerText="Encuesta Id" style="text-align: center">-->
+				<!--<h:outputText value="#{enc.encuesta_Id}" />-->
+			<!--</p:column> -->
+
+			<p:column headerText="Título" style="text-align: center">
+				<h:outputText value="#{enc.encuesta_Titulo}" />
+			</p:column>
+
+			<p:column headerText="Descripción" style="text-align: center">
+				<h:outputText value="#{enc.encuesta_Descripcion}" />
+			</p:column>
+
+			<p:column headerText="Estado" style="text-align: center">
+				<h:outputText value="#{enc.encuesta_Estado}" />
+			</p:column>
+			<p:column headerText="Numero de Preguntas" style="text-align: center">
+				<h:outputText value="#{encuestacontrol.numPreguntas(enc.encuesta_Id)}" />
+			</p:column>
+			<p:column headerText="Acciones" style="width:120px;text-align: center">
+
+				<p:commandButton id="btnPreguntas" value="Preguntas" ajax="false" icon="ui-icon-search"
+					action="#{encuestacontrol.ObtenerPreguntasUs(enc.encuesta_Id)}" />
+					
+			
+					
+				<p:commandButton id="btnEditarEnc" value="Editar" oncomplete="docDialogoEncuesta.show()" update=":formEncuestas:docDetalleEncuesta" action="#{encuestacontrol.putOldEncuestaId(enc)}" icon="ui-icon-pencil" title="EditarEncuesta" >
+					<f:setPropertyActionListener value="#{enc}" target="#{encuestacontrol.encEdit}" />
+				</p:commandButton>
+				
+				<p:commandButton id="btnEnviar" value="Enviar" ajax="false" icon="ui-icon-mail-closed" disabled="false" rendered="${enc.encuesta_Estado eq 'Abierta'}" action="#{encuestacontrol.EnviarCorreo(enc)}" >
+				</p:commandButton>
+				
+				<p:commandButton id="btnEnviar1" value="Enviar" ajax="false" icon="ui-icon-mail-closed" disabled="true" rendered="${enc.encuesta_Estado eq 'Cerrada' or enc.encuesta_Estado eq 'En construcción'}" >
+				</p:commandButton>
+				
+
+			</p:column>
+		</p:dataTable>
+		
+		<p:dialog header="Edición de encuesta" widgetVar="docDialogoEncuesta" modal="true" showEffect="fade" hideEffect="fade" resizable="false" >				
+					<h:panelGrid id="docDetalleEncuesta" columns="2" cellpadding="5">	
+						<f:facet name="header">
+							<h:panelGroup style="display:block; text-align:center; width:100%">
+								<h:outputText value="Los campos con (*) son obligatorios" style = "font-weight: bold;"/>
+							</h:panelGroup>
+						</f:facet>	                		        
+                    
+                        <p:outputLabel value="Título*" for="titulo"/>
+                        <p:inputText id="titulo" value="#{encuestacontrol.encEdit.encuesta_Titulo}" style="width:700px"/>
+                        
+                        <p:outputLabel value="Descripción" for="descripcion"/>
+                        <p:inputTextarea rows="8" cols="33" id="descripcion" value="#{encuestacontrol.encEdit.encuesta_Descripcion}"  style="width:700px" autoResize="false"/>
+                        
+                        <p:outputLabel value="Estado*" for="estado"/>                     
+                        <p:selectOneMenu id="estado" value="#{encuestacontrol.encEdit.encuesta_Estado}">                          
+                            <f:selectItem itemLabel="Abierta" itemValue="Abierta"/>
+                            <f:selectItem itemLabel="Cerrada" itemValue="Cerrada"/> 
+                            <f:selectItem itemLabel="En construcción" itemValue="En construccion"/>
+                            <p:ajax update="estado"/>
+                        </p:selectOneMenu>
+                        
+						<f:facet name="footer">
+            				<h:panelGroup style="display:block; text-align:right; width:100%">
+                				<p:commandButton id="btnGuardar" value="Guardar" actionListener="#{encuestacontrol.EditarEncuesta()}" update=":formEncuestas" />
+            				</h:panelGroup>
+        				</f:facet>
+		            </h:panelGrid>						            
+	    </p:dialog>
+	            
+	</h:form>
+</h:body>
+</html>

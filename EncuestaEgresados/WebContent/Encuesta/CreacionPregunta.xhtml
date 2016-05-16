@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+	<h:head>
+	</h:head>
+	
+	<h:body>
+	<h:outputText style="font-weight: bold; font-size:23px;" value="#{encuestacontrol.devolverEncuesta(user.usuarioId)}" /><br/>
+	<h:outputText style="font-size:13px;" value="Número de preguntas registradas en esta encuesta: " />
+		<h:outputText style="font-size:13px;" value="#{encuestacontrol.numPreguntas(encuestacontrol.encuesta_Id)}" /><br/><br/>
+	<h:form id="formcreacionPregunta">
+                 
+    <p:growl id="growl" sticky="true" showDetail="true"/>
+ 
+    <p:wizard flowListener="#{encuestacontrol.SiguientePaso}" widgetVar="wizard" backLabel="Volver" nextLabel="Siguiente" style="width:70%;">
+        <p:tab id="infopregunta" title="Pregunta">
+            <p:panel header="Detalles de la Pregunta">
+                <p:messages />
+                <h:panelGrid columns="2" columnClasses="label, value">
+                    <h:outputLabel value="Enunciado: *" />
+                    <p:inputText value="#{encuestacontrol.preg.pregunta_Enunciado}" required="true" label="Enunciado"/>
+ 
+                    <h:outputText value="Tipo de Pregunta: *" />
+                    <p:selectOneMenu id="tipopregunta" value="#{encuestacontrol.preg.pregunta_Tipo}" >
+		            	<f:selectItem itemLabel="Respuesta Unica" itemValue="Respuesta Unica" />
+		            	<f:selectItem itemLabel="Respuesta Abierta" itemValue="Respuesta Abierta" />
+		            	<f:selectItem itemLabel="Multiple Respuesta" itemValue="Multiple Respuesta" />
+        			</p:selectOneMenu>
+        			<h:outputText value="Obligatoria: " />
+ 					<p:selectBooleanCheckbox value="#{encuestacontrol.preg.obligatorio}" />
+                </h:panelGrid>
+            <br />
+            <br />
+            <br />
+            </p:panel>
+        </p:tab>
+ 		
+        <p:tab id="opciones" title="Creación de Opciones">
+            <p:panel header="Creacion de Opciones" >
+                <p:messages />
+                <h:panelGrid columns="3" columnClasses="label, value, button">
+                    <h:outputLabel value="Enunciado de la Opcion: " rendered="#{encuestacontrol.preg.pregunta_Tipo.equalsIgnoreCase('Respuesta Unica')||encuestacontrol.preg.pregunta_Tipo.equalsIgnoreCase('Multiple Respuesta')}"/>
+                    <p:inputText value="#{encuestacontrol.enunopcion}" rendered="#{encuestacontrol.preg.pregunta_Tipo.equalsIgnoreCase('Respuesta Unica')||encuestacontrol.preg.pregunta_Tipo.equalsIgnoreCase('Multiple Respuesta')}"/>
+                    <p:commandButton id="btnCrearOpc" value="Agregar Opcion" ajax="false" action="#{encuestacontrol.AddOpcion()}" rendered="#{encuestacontrol.preg.pregunta_Tipo.equalsIgnoreCase('Respuesta Unica')||encuestacontrol.preg.pregunta_Tipo.equalsIgnoreCase('Multiple Respuesta')}"/>
+                	<h:outputText value="Las preguntas de tipo abierta no pueden tener opciones" styleClass="outputLabel" rendered="#{encuestacontrol.preg.pregunta_Tipo.equalsIgnoreCase('Respuesta Abierta')}"/>
+                </h:panelGrid>
+            </p:panel>
+            <br></br>
+            <p:dataTable id="tablaOpciones" var="opcion" value="#{encuestacontrol.stopciones}" rendered="#{encuestacontrol.preg.pregunta_Tipo.equalsIgnoreCase('Respuesta Unica')||encuestacontrol.preg.pregunta_Tipo.equalsIgnoreCase('Multiple Respuesta')}" paginator="true" rows="10" styleClass="paginated" emptyMessage="No hay opciones creadas para esta pregunta" style="text-align:center">
+				<p:column headerText="Enunciado" >
+			            <h:outputText value="#{opcion}" />
+			    </p:column>
+			    <p:column headerText="Acciones" >
+			            <p:commandButton icon="ui-icon-pencil" title="Editar Opcion" value="Editar" oncomplete="editarDialogo.show()" update=":formcreacionPregunta:detalleEditar" action="#{encuestacontrol.cambiarOpcionSeleccionada(opcion)}">
+			            	<f:setPropertyActionListener value="#{opcion}" target="#{encuestacontrol.opciontemp}" />
+			            </p:commandButton>
+			    		<p:commandButton icon="ui-icon-close" title="Eliminar Opcion" value="Eliminar"
+			    		 oncomplete="eliminarDialogo.show()"
+			    		  update=":formcreacionPregunta:detalleBorrar" 
+			    		  action="#{encuestacontrol.cambiarOpcionSeleccionada(opcion)}" >
+			    			<f:setPropertyActionListener value="#{opcion}" target="#{encuestacontrol.opcionseleccionada}" />
+			    		</p:commandButton>
+			    </p:column>
+			    
+			</p:dataTable>
+			<p:dialog id="confirmarBorrar" header="¿Desea eliminar la opción?" widgetVar="eliminarDialogo" modal="true" showEffect="fade" hideEffect="fade" resizable="false" >
+			    <h:panelGrid id="detalleBorrar" cellpadding="5">		
+			    	<h:panelGroup style="display:block; text-align:center; width:100%">
+						<p:commandButton value="Eliminar" oncomplete="eliminarDialogo.hide()" 
+						actionListener="#{encuestacontrol.DeleteOpcion(encuestacontrol.opcionseleccionada)}"
+						 update=":formcreacionPregunta" />
+			    		<p:commandButton value= "Cancelar" onclick="eliminarDialogo.hide()"/>			
+					</h:panelGroup>
+				</h:panelGrid>
+    		</p:dialog>
+    		<p:dialog id="editarOpcion" header="Editar Opcion" widgetVar="editarDialogo" modal="true" showEffect="fade" hideEffect="fade" resizable="false" >
+			    <h:panelGrid id="detalleEditar" columns="2" cellpadding="5">		
+			    	<p:outputLabel value="Enunciado" for="enunciado"/>
+                    <p:inputText id="enunciado" value="#{encuestacontrol.opciontemp}" />
+					<f:facet name="footer">
+            			<h:panelGroup style="display:block; text-align:center; width:100%">
+							<p:commandButton value="Guardar" oncomplete="editarDialogo.hide()" actionListener="#{encuestacontrol.editarOpcion()}" update=":formcreacionPregunta" />
+				    		<p:commandButton value= "Cancelar" onclick="editarDialogo.hide()"/>			
+						</h:panelGroup>
+        			</f:facet>
+				</h:panelGrid>
+    		</p:dialog>   
+        </p:tab>
+       
+        <p:tab id="confirm" title="Confirmación">
+            <p:panel header="Vista previa de la pregunta" >
+                <h:panelGrid>               	             
+	                 	<h:outputText value="#{encuestacontrol.preg.pregunta_Enunciado} (#{encuestacontrol.preg.pregunta_Tipo})" styleClass="outputLabel" />	                 							
+						<h:panelGroup style="width:20px;">
+						<p:selectOneRadio id="opcionesradio"  layout="pageDirection" rendered="#{encuestacontrol.preg.pregunta_Tipo.equalsIgnoreCase('Respuesta Unica') and encuestacontrol.stopciones.size()!=0}" >
+	            			<f:selectItems value="#{encuestacontrol.stopciones}" var="o" itemValue="#{opcionesradio}"/>
+	        			</p:selectOneRadio>
+	        			</h:panelGroup>
+	        			<p:selectManyCheckbox id="opcionescheck"  style="display:block; text-align:center; width:100%;" layout="pageDirection" rendered="#{encuestacontrol.preg.pregunta_Tipo.equalsIgnoreCase('Multiple Respuesta') and encuestacontrol.stopciones.size()!=0}">        				
+	        				<f:selectItems value="#{encuestacontrol.stopciones}" var="opcion" itemValue="#{opcion}" />
+	    				</p:selectManyCheckbox>
+	                 	<p:inputTextarea rows="10" cols="50" rendered="#{encuestacontrol.preg.pregunta_Tipo.equalsIgnoreCase('Respuesta Abierta')}" style="text-align:center"/>    
+                </h:panelGrid>
+                <br/>
+                <h:panelGrid style="text-align:right; width:100%;">
+                	<p:commandButton value="Guardar Pregunta" ajax="false" action="#{encuestacontrol.CrearPregunta(encuestacontrol.encuesta_Id)}"/>
+                </h:panelGrid>
+ 				
+            </p:panel>
+        </p:tab>
+    </p:wizard>
+</h:form>
+<h:form><p:commandButton value="Volver a Preguntas" ajax="false" action="#{encuestacontrol.VolverPreguntas(encuestacontrol.encuesta_Id)}"/></h:form>
+	</h:body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+	<h:head>
+	<title>Crear Opciones de Pregunta</title>
+	</h:head>
+	
+	<h:body>
+	<h:form>
+	<p:growl id="msgs" showDetail="true" />
+	<p:panel id="panelOpciones" header="Crear Opcion" style="text-align:center" >
+	       	<p:panel columns="2">
+		    	<h:outputLabel for="enunciadoopcion" value="Enunciado Opcion*" />
+		        <p:inputText id="enunciadoopcion" value="#{encuestacontrol.enunopcion}" />
+		        <br></br>
+		        <p:commandButton id="btnCrearOpc" value="Agregar Opcion" ajax="false" action="#{encuestacontrol.AddOpcion()}"/>
+		        <p:commandButton id="btnCancelarOpc" value="Cancelar" ajax="false" />
+		        <p:commandButton id="btnFinPreg" value="Finalizar Creacion Pregunta" ajax="false" action="#{encuestacontrol.ImprimirArray(encuestacontrol.stopciones)}"/>
+	        </p:panel>
+	        <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+	    </p:panel>
+	<p:dataTable id="singleDT" var="opcion" value="#{encuestacontrol.stopciones}" selectionMode="single" selection="#{encuestacontrol.opcionseleccionada}" rowKey="#{opcion}">
+	<p:column headerText="Opciones">
+            <h:outputText value="#{opcion}" />
+    </p:column>
+	</p:dataTable>
+	    
+	<!-- <p:orderList value="#{encuestacontrol.stopciones}" var="opcion" controlsLocation="none" itemLabel="#{opcion}" itemValue="#{opcion}" selectionMode="single" selection="#{encuestacontrol.opcionseleccionada}"/> -->
+	<p:commandButton id="btnBorrarOpc" value="Eliminar Opcion" ajax="false" action="#{encuestacontrol.DeleteOpcion()}"/>
+	</h:form>
+	</h:body>
+</html>

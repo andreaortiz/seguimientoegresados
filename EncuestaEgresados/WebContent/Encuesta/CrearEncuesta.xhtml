@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+	<h:head>
+	</h:head>
+	<body>
+		
+		    <h:form>
+				<p:growl id="growl" sticky="false" showDetail="true" life="5000"/>
+                <p:panel header="Crear una nueva encuesta" style="margin-bottom:10px;">
+                    <h:panelGrid columns="2" cellpadding="5">                  
+                    
+                        <p:outputLabel value="Título" for="titulo"/>
+                        <p:inputText id="titulo" value="#{encuestacontrol.enc.encuesta_Titulo}" required="true" requiredMessage="Titulo: Este campo es obligatorio" style="width:700px"/>
+                        
+                        <p:outputLabel value="Descripción" for="descripcion"/>
+                        <p:inputTextarea rows="6" cols="33" id="descripcion" value="#{encuestacontrol.enc.encuesta_Descripcion}"  style="width:700px"/>
+                        <!--  
+                        <p:outputLabel value="Estado" for="estado"/>                     
+                        <p:selectOneMenu id="estado" value="#{encuestacontrol.enc.encuesta_Estado}" required="true" requiredMessage="Estado: Este campo es obligatorio">
+                            <f:selectItem itemLabel="Selecciona un estado" noSelectionOption="true"/>
+                            <f:selectItem itemLabel="En construcción" itemValue="En construccion"/>                                                                                                             
+                        </p:selectOneMenu>
+                        -->
+                    </h:panelGrid>
+                   <br/>
+                    <h:panelGroup style="display:block; text-align:center">
+                    <p:commandButton id="btnCancelarEnc" immediate="true" value="Volver a encuestas" ajax="false" action="#{encuestacontrol.VolverEncuestas()}"/>
+                    	<p:commandButton id="btnCrearEnc" value="Guardar encuesta" ajax="false" action="#{encuestacontrol.CrearEncuesta(user.usuarioId)}"/>
+		        	</h:panelGroup>
+                </p:panel>
+            </h:form>
+            <!-- 
+            <h:form >
+	            <h:panelGrid columns="2" style="width:100%;">
+	            	<f:facet name="footer">
+	            		<h:panelGroup style="display:block; text-align:Left">
+	            		
+	            		</h:panelGroup>
+	            	</f:facet>
+	            
+	            </h:panelGrid>
+            </h:form>
+            -->           
+	</body>
+</html>
